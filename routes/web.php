@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductSearchController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,3 +22,5 @@ require __DIR__.'/auth.php';
 Route::get('/admin/dashboard', function () {
     return 'Chào mừng Admin đến trang quản trị!';
 })->middleware(['auth', 'admin'])->name('admin.dashboard');
+
+Route::get('/san-pham', [ProductSearchController::class, 'index'])->name('products.search');
