@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductSearchController extends Controller
@@ -14,7 +14,7 @@ class ProductSearchController extends Controller
 
         // Tìm kiếm theo tên
         if ($request->filled('keyword')) {
-            $query->where('name', 'like', '%' . $request->keyword . '%');
+            $query->where('name', 'like', '%'.$request->keyword.'%');
         }
 
         // Lọc theo danh mục
