@@ -42,7 +42,7 @@ class ProductSeeder extends Seeder
                     'price' => $data['price'],
                     'sale_price' => $data['sale_price'],
                     'stock_quantity' => 100,
-                    'sku' => 'SP' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'sku' => 'SP'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
                     'is_featured' => $index % 3 === 0,
                     'is_active' => true,
                 ]

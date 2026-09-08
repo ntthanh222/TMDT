@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -16,6 +16,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category')->latest()->paginate(10);
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -23,6 +24,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::where('is_active', 1)->get();
+
         return view('admin.products.create', compact('categories'));
     }
 
@@ -30,22 +32,22 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'           => 'required|string|max:255',
-            'category_id'    => 'required|exists:categories,id',
-            'price'          => 'required|numeric|min:0',
-            'sale_price'     => 'nullable|numeric|lt:price',
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'sale_price' => 'nullable|numeric|lt:price',
             'stock_quantity' => 'required|integer|min:0',
-            'sku'            => 'nullable|string|unique:products,sku',
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'images.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            'sku' => 'nullable|string|unique:products,sku',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $data = $request->only([
-            'category_id', 'name', 'description', 
-            'price', 'sale_price', 'stock_quantity', 'sku'
+            'category_id', 'name', 'description',
+            'price', 'sale_price', 'stock_quantity', 'sku',
         ]);
 
-        $data['slug'] = Str::slug($request->name) . '-' . time();
+        $data['slug'] = Str::slug($request->name).'-'.time();
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
@@ -81,6 +83,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::where('is_active', 1)->get();
+
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -88,21 +91,21 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'name'           => 'required|string|max:255',
-            'category_id'    => 'required|exists:categories,id',
-            'price'          => 'required|numeric|min:0',
-            'sale_price'     => 'nullable|numeric|lt:price',
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|numeric|min:0',
+            'sale_price' => 'nullable|numeric|lt:price',
             'stock_quantity' => 'required|integer|min:0',
-            'sku'            => 'nullable|string|unique:products,sku,' . $product->id,
-            'image'          => 'nullable|image|max:2048'
+            'sku' => 'nullable|string|unique:products,sku,'.$product->id,
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $data = $request->only([
-            'category_id', 'name', 'description', 
-            'price', 'sale_price', 'stock_quantity', 'sku'
+            'category_id', 'name', 'description',
+            'price', 'sale_price', 'stock_quantity', 'sku',
         ]);
 
-        $data['slug'] = Str::slug($request->name) . '-' . $product->id;
+        $data['slug'] = Str::slug($request->name).'-'.$product->id;
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,11 +43,10 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-
         // 1. Kiểm tra tài khoản có bị khóa hay không
-        $user = \App\Models\User::where('email', $this->input('email'))->first();
+        $user = User::where('email', $this->input('email'))->first();
 
-        if ($user && !$user->is_active) {
+        if ($user && ! $user->is_active) {
             throw ValidationException::withMessages([
                 'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
             ]);
