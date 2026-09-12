@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Shop - Giỏ Hàng & Thanh Toán</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #f4f6f9; padding: 15px; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2, h3 { color: #4a2c2a; margin-top: 0; }
+        .product-item, .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        input, select, button { padding: 10px; margin: 5px 0; width: 100%; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #6f4e37; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: #5a3e2b; }
+        .btn-sm { width: auto; padding: 5px 10px; margin: 0 2px; }
+        .btn-danger { background: #dc3545; }
+        .hidden { display: none; }
+        /* Responsive Mobile */
+        @media (max-width: 600px) {
+            .product-item, .cart-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. CỬA HÀNG SẢN PHẨM (TẢI TỰ ĐỘNG TỪ DATABASE) -->
+<div class="card">
+    <h3>☕ Danh Sách Nguyên Liệu Cà Phê</h3>
+    <div id="productList">Đang tải danh sách sản phẩm từ CSDL...</div>
+</div>
+
+    <!-- 2. GIỎ HÀNG -->
+    <div class="card">
+        <h3>🛒 Giỏ Hàng Của Bạn</h3>
+        <div id="cartList">Chưa có sản phẩm trong giỏ hàng.</div>
+        <hr>
+        <p>Tổng tiền hàng: <strong id="totalCart">0 VNĐ</strong></p>
+    </div>
+
+    <!-- 3. MÃ GIẢM GIÁ & MẪU ĐẶT HÀNG -->
+    <div class="card">
+        <h3>🚚 Thông Tin Giao Hàng & Thanh Toán</h3>
+        <input type="text" id="name" placeholder="Họ và tên người nhận" value="Nguyễn Văn A">
+        <input type="text" id="phone" placeholder="Số điện thoại" value="0901234567">
+        <input type="text" id="address" placeholder="Địa chỉ giao hàng" value="123 Lê Văn Việt, TP.HCM">
+        
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="couponCode" placeholder="Nhập mã giảm giá (VD: COFFEE10)">
+            <button class="btn-sm" onclick="applyCoupon()" style="width: 150px;">Áp dụng</button>
+        </div>
+        <p id="couponResult" style="color: green; margin: 5px 0;"></p>
+
+        <p>Phí vận chuyển: <strong>30.000 VNĐ</strong></p>
+        <p>Tổng thanh toán: <strong id="finalTotal" style="color: #dc3545; font-size: 1.2em;">30.000 VNĐ</strong></p>
+        
+        <button onclick="checkout()" style="font-size: 1.1em; padding: 12px;">XÁC NHẬN ĐẶT HÀNG (COD)</button>
+    </div>
+
+    <!-- 4. TRANG ĐẶT HÀNG THÀNH CÔNG & XEM ĐƠN -->
+    <div id="successCard" class="card hidden" style="border: 2px solid #28a745;">
+        <h3 style="color: #28a745;">🎉 ĐẶT HÀNG THÀNH CÔNG!</h3>
+        <p>Mã đơn hàng của bạn là: <strong id="outOrderId">#0</strong></p>
+        <p>Cảm ơn bạn đã ủng hộ Cửa hàng nguyên liệu Cà Phê!</p>
+        <button onclick="viewOrderDetails()">🔍 Xem Chi Tiết Đơn Hàng</button>
+        <div id="orderDetails" class="hidden" style="margin-top: 15px; background: #f9f9f9; padding: 10px;"></div>
+    </div>
+
+</div>
+
+<script>
+    let cart = [];
+    let discountAmount = 0;
+    const API_URL = 'http://localhost:5000/api';
+
+    // Thêm sản phẩm vào giỏ
+    function addToCart(id, name, price) {
+        const item = cart.find(x => x.productId === id);
+        if (item) {
+            item.quantity += 1;
+        } else {
+            cart.push({ productId: id, name: name, price: price, quantity: 1 });
+        }
+        renderCart();
+    }
+
+    // Sửa số lượng sản phẩm
+    function updateQuantity(id, delta) {
+        const item = cart.find(x => x.productId === id);
+        if (item) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(x => x.productId !== id);
+            }
+        }
+        renderCart();
+    }
+
+    // Xóa sản phẩm khỏi giỏ
+    function removeFromCart(id) {
+        cart = cart.filter(x => x.productId !== id);
+        renderCart();
+    }
+
+    // Hiển thị danh sách giỏ hàng & Tính tổng tiền
+    function renderCart() {
+        const cartList = document.getElementById('cartList');
+        if (cart.length === 0) {
+            cartList.innerHTML = 'Chưa có sản phẩm trong giỏ hàng.';
+            document.getElementById('totalCart').innerText = '0 VNĐ';
+            document.getElementById('finalTotal').innerText = '30.000 VNĐ';
+            return;
+        }
+
+        let html = '';
+        let total = 0;
+        cart.forEach(item => {
+            const sum = item.price * item.quantity;
+            total += sum;
+            html += `
+                <div class="cart-item">
+                    <span>${item.name} (${item.price.toLocaleString()}đ)</span>
+                    <div>
+                        <button class="btn-sm" onclick="updateQuantity(${item.productId}, -1)">-</button>
+                        <strong>${item.quantity}</strong>
+                        <button class="btn-sm" onclick="updateQuantity(${item.productId}, 1)">+</button>
+                        <button class="btn-sm btn-danger" onclick="removeFromCart(${item.productId})">Xóa</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        cartList.innerHTML = html;
+        document.getElementById('totalCart').innerText = `${total.toLocaleString()} VNĐ`;
+        
+        const final = total - discountAmount + 30000;
+        document.getElementById('finalTotal').innerText = `${(final > 0 ? final : 0).toLocaleString()} VNĐ`;
+    }
+
+    // Áp dụng mã giảm giá
+    async function applyCoupon() {
+        const code = document.getElementById('couponCode').value;
+        let totalCart = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        if(!code) return alert("Vui lòng nhập mã!");
+
+        try {
+            const res = await fetch(`${API_URL}/apply-coupon`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, totalAmount: totalCart })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                discountAmount = data.discountAmount;
+                document.getElementById('couponResult').innerText = `Thành công! Đã giảm ${discountAmount.toLocaleString()} VNĐ`;
+                renderCart();
+            } else {
+                alert(data.message);
+            }
+        } catch(err) {
+            alert("Lỗi kết nối Server!");
+        }
+    }
+
+    // Checkout Thanh toán
+    async function checkout() {
+        if (cart.length === 0) return alert("Giỏ hàng của bạn đang trống!");
+
+        const orderData = {
+            userId: 1,
+            customerName: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            cartItems: cart,
+            discountAmount: discountAmount,
+            paymentMethod: 'COD'
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('outOrderId').innerText = `#${data.orderId}`;
+                document.getElementById('successCard').classList.remove('hidden');
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                // Reset giỏ hàng
+                cart = [];
+                discountAmount = 0;
+                renderCart();
+            } else {
+                alert(`Đặt hàng thất bại: ${data.message}`);
+            }
+        } catch(err) {
+            alert("Lỗi kết nối Server khi đặt hàng!");
+        }
+    }
+
+    // Xem chi tiết & Trạng thái đơn hàng
+    async function viewOrderDetails() {
+        const orderIdStr = document.getElementById('outOrderId').innerText.replace('#', '');
+        try {
+            const res = await fetch(`${API_URL}/orders/${orderIdStr}`);
+            const data = await res.json();
+
+            if (data.success) {
+                const order = data.order;
+                const detailsDiv = document.getElementById('orderDetails');
+                detailsDiv.classList.remove('hidden');
+                
+                let itemsHtml = data.items.map(i => `<li>${i.name} x ${i.quantity}</li>`).join('');
+                detailsDiv.innerHTML = `
+                    <p><strong>Trạng thái:</strong> <span style="color: green;">${order.status || 'Đang xử lý'}</span></p>
+                    <p><strong>Người nhận:</strong> ${order.customer_name} (${order.phone})</p>
+                    <p><strong>Địa chỉ:</strong> ${order.address}</p>
+                    <p><strong>Sản phẩm đã mua:</strong></p>
+                    <ul>${itemsHtml}</ul>
+                `;
+            }
+        } catch(err) {
+            alert("Không lấy được thông tin đơn hàng!");
+        }
+    }
+</script>
+
+</body>
+</html>
