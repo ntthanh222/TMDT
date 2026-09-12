@@ -9,7 +9,7 @@
                 Liên Hệ & Góp Ý
             </h1>
             <p class="mt-3 max-w-2xl mx-auto text-base text-gray-500">
-                Chúng tôi luôn lắng nghe mọi ý kiến đóng góp và sẵn sàng giải đáp mọi thắc mắc của bạn về sản phẩm và dịch vụ của CoffeeShop.
+                Chúng tôi luôn lắng nghe mọi ý kiến đóng góp và sẵn sàng giải đáp mọi thắc mắc của bạn về sản phẩm và dịch vụ của GoodCafe.
             </p>
         </div>
 
@@ -42,7 +42,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
-                            <span class="text-sm text-amber-100">Số 1 Võ Văn Ngân, Phường Linh Chiểu, TP. Thủ Đức, TP. HCM</span>
+                            <span class="text-sm text-amber-100">70 Tô Ký, Trung Mỹ Tây</span>
                         </div>
 
                         <div class="flex items-center space-x-3">
@@ -56,7 +56,7 @@
                             <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            <span class="text-sm text-amber-100">contact@cafeshop.com</span>
+                            <span class="text-sm text-amber-100">support@goodcafe.vn</span>
                         </div>
 
                         <div class="flex items-center space-x-3">
@@ -157,6 +157,141 @@
                 </form>
             </div>
         </div>
+
+        <div class="mt-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Khách hàng đánh giá</h2>
+                <a href="{{ route('products.search') }}" class="text-sm font-medium text-amber-600 hover:text-amber-700">Xem sản phẩm khác</a>
+            </div>
+
+            <div class="mb-8 rounded-2xl border border-amber-200 bg-amber-50/60 p-5 shadow-sm">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Gửi đánh giá cho cửa hàng</h3>
+                        <p class="text-sm text-gray-600">Chia sẻ trải nghiệm của bạn để giúp cửa hàng cải thiện dịch vụ.</p>
+                    </div>
+                </div>
+
+                <form action="{{ route('contact.review.store') }}" method="POST" class="mt-5 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Đánh giá</label>
+                        <div class="star-rating flex items-center space-x-2" aria-label="Chọn số sao">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <label class="star-option cursor-pointer select-none">
+                                    <input type="radio" name="rating" value="{{ $i }}" class="star-input sr-only" required>
+                                    <span class="star-icon flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 bg-white text-xl text-gray-300 transition hover:border-amber-400 hover:bg-amber-50 hover:text-amber-400">★</span>
+                                </label>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="review-comment" class="block text-sm font-medium text-gray-700 mb-2">Nhận xét</label>
+                        <textarea id="review-comment" name="comment" rows="4" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200" placeholder="Ví dụ: Cà phê rất ngon, nhân viên nhiệt tình và không gian đẹp..." required></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700">
+                            Gửi đánh giá
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            @if ($recentReviews->isEmpty())
+                <div class="rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-sm text-gray-500">
+                    Chưa có đánh giá nào cho cửa hàng. Hãy là người đầu tiên chia sẻ trải nghiệm của bạn.
+                </div>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach ($recentReviews as $review)
+                        @php
+                            $userName = is_object($review) ? ($review->user->name ?? $review->user_name ?? 'Khách hàng') : ($review['user_name'] ?? 'Khách hàng');
+                            $rating = is_object($review) ? ($review->rating ?? 5) : ($review['rating'] ?? 5);
+                            $comment = is_object($review) ? ($review->comment ?? 'Khách hàng rất hài lòng với sản phẩm.') : ($review['comment'] ?? 'Khách hàng rất hài lòng với sản phẩm.');
+                            $createdAt = is_object($review) ? ($review->created_at ?? now()) : ($review['created_at'] ?? now());
+                            $productName = is_object($review) ? ($review->product->name ?? 'Sản phẩm') : ($review['product_name'] ?? 'Sản phẩm');
+                            $productId = is_object($review) ? ($review->product_id ?? null) : null;
+                        @endphp
+                        <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-800">
+                                        {{ strtoupper(substr($userName, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-900">{{ $userName }}</div>
+                                        <div class="text-xs text-gray-500">{{ $createdAt instanceof \Carbon\Carbon ? $createdAt->format('d/m/Y') : \Illuminate\Support\Carbon::parse($createdAt)->format('d/m/Y') }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <svg class="h-4 w-4 {{ $i <= $rating ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200' }}" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                    @endfor
+                                </div>
+                            </div>
+
+                            <p class="text-sm leading-6 text-gray-700">
+                                {{ \Illuminate\Support\Str::limit($comment, 140) }}
+                            </p>
+
+                            @if ($productId)
+                                <div class="mt-4 border-t border-gray-100 pt-3">
+                                    <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Sản phẩm</span>
+                                    <a href="{{ route('reviews.index', $productId) }}" class="mt-1 block text-sm font-medium text-amber-700 hover:text-amber-800">
+                                        {{ $productName }}
+                                    </a>
+                                </div>
+                            @else
+                                <div class="mt-4 border-t border-gray-100 pt-3">
+                                    <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400">Cửa hàng</span>
+                                    <span class="mt-1 block text-sm font-medium text-amber-700">{{ $productName }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ratingGroups = document.querySelectorAll('.star-rating');
+
+        ratingGroups.forEach(function (group) {
+            const inputs = group.querySelectorAll('.star-input');
+
+            function updateStars(selectedValue) {
+                inputs.forEach(function (input) {
+                    const star = input.parentElement.querySelector('.star-icon');
+                    const isActive = Number(input.value) <= Number(selectedValue || 0);
+
+                    star.classList.toggle('border-amber-400', isActive);
+                    star.classList.toggle('bg-amber-100', isActive);
+                    star.classList.toggle('text-amber-500', isActive);
+                    star.classList.toggle('text-gray-300', !isActive);
+                    star.classList.toggle('bg-white', !isActive);
+                    star.classList.toggle('border-amber-200', !isActive);
+                });
+            }
+
+            inputs.forEach(function (input) {
+                input.addEventListener('change', function () {
+                    updateStars(this.value);
+                });
+            });
+
+            const checked = group.querySelector('.star-input:checked');
+            if (checked) {
+                updateStars(checked.value);
+            }
+        });
+    });
+</script>
 @endsection

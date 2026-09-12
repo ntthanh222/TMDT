@@ -19,6 +19,45 @@ class FeedbackTest extends TestCase
             ->assertSee('Gửi liên hệ', false);
     }
 
+    public function test_contact_page_shows_customer_reviews(): void
+    {
+        $category = \App\Models\Category::create([
+            'name' => 'Cà phê',
+            'slug' => 'ca-phe',
+            'description' => 'Các loại cà phê',
+            'is_active' => true,
+        ]);
+
+        $user = \App\Models\User::factory()->create();
+        $product = \App\Models\Product::create([
+            'category_id' => $category->id,
+            'name' => 'Cà phê Arabica',
+            'slug' => 'ca-phe-arabica',
+            'description' => 'Mô tả',
+            'price' => 120000,
+            'sale_price' => 99000,
+            'stock_quantity' => 20,
+            'sku' => 'ARABICA-001',
+            'is_featured' => true,
+            'is_active' => true,
+            'view_count' => 0,
+        ]);
+
+        \App\Models\Review::create([
+            'product_id' => $product->id,
+            'user_id' => $user->id,
+            'rating' => 5,
+            'comment' => 'Hương vị rất ngon và cực kỳ hài lòng.',
+            'is_approved' => true,
+        ]);
+
+        $response = $this->get(route('contact.create'));
+
+        $response->assertOk()
+            ->assertSee('Khách hàng đánh giá', false)
+            ->assertSee('Hương vị rất ngon và cực kỳ hài lòng.', false);
+    }
+
     public function test_guest_can_submit_feedback(): void
     {
         $payload = [
