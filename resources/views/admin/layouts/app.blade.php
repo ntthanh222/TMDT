@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }} - Quản Trị Hệ Thống</title>
+        <title>GoodCafe - Quản Trị Hệ Thống</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,17 +23,22 @@
                     <div class="flex justify-between h-16 items-center">
                         <div class="flex items-center space-x-6">
                             <a href="{{ route('admin.dashboard') }}" class="font-bold text-lg text-emerald-400 flex items-center">
-                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                CoffeeShop Admin
+                                <x-application-logo class="w-6 h-6 mr-2 text-emerald-400" />
+                                GoodCafe Admin
                             </a>
 
                             <div class="hidden md:flex space-x-2">
+                                <a href="{{ route('admin.products.index') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.products.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Quản lý sản phẩm
+                                </a>
                                 <a href="{{ route('admin.reviews.index') }}" 
                                    class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.reviews.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                                     Quản lý đánh giá
+                                </a>
+                                <a href="{{ route('admin.orders.index') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.orders.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Quản lý đơn hàng
                                 </a>
                                 <a href="{{ route('admin.feedbacks.index') }}" 
                                    class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.feedbacks.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
@@ -42,7 +48,7 @@
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <a href="{{ url('/') }}" target="_blank" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-gray-300">
+                            <a href="{{ route('products.search') }}" target="_blank" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-gray-300">
                                 Xem cửa hàng
                             </a>
                             <span class="text-sm text-gray-300">{{ Auth::user()->name }}</span>

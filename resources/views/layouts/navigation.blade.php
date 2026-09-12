@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-sm">
+<nav x-data="{ open: false }" class="bg-[#fffdfb] border-b border-amber-200 shadow-sm">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -6,19 +6,33 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center font-bold text-amber-800 text-lg">
-                        <x-application-logo class="block h-9 w-auto fill-current text-amber-700 mr-2" />
-                        CoffeeShop
+                        <x-application-logo class="block h-9 w-auto text-amber-700 mr-2" />
+                        GoodCafe
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        {{ __('Trang chủ') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('products.search')" :active="request()->routeIs('products.*')">
+                        Sản phẩm
                     </x-nav-link>
                     <x-nav-link :href="route('contact.create')" :active="request()->routeIs('contact.*')">
                         Liên hệ
                     </x-nav-link>
+                    @auth
+                        <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">
+                            Giỏ hàng
+                        </x-nav-link>
+                        <x-nav-link :href="route('orders.history')" :active="request()->routeIs('orders.*')">
+                            Lịch sử đơn hàng
+                        </x-nav-link>
+                        <x-nav-link :href="route('wishlist.index')" :active="request()->routeIs('wishlist.*')">
+                            Yêu thích
+                        </x-nav-link>
+                    @endauth
                     @if (Auth::check() && Auth::user()->role === 'admin')
                         <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.*')">
                             Quản trị
@@ -46,6 +60,9 @@
                         <x-slot name="content">
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('orders.history')">
+                                Lịch sử đơn hàng
                             </x-dropdown-link>
 
                             <!-- Authentication -->
@@ -84,11 +101,22 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+                {{ __('Trang chủ') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('products.search')" :active="request()->routeIs('products.*')">
+                Sản phẩm
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contact.create')" :active="request()->routeIs('contact.*')">
                 Liên hệ
             </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">
+                    Giỏ hàng
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('wishlist.index')" :active="request()->routeIs('wishlist.*')">
+                    Yêu thích
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
@@ -102,6 +130,9 @@
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('orders.history')">
+                        Lịch sử đơn hàng
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->
