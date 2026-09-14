@@ -60,7 +60,7 @@
                             <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition duration-200 overflow-hidden flex flex-col border border-gray-100">
                                 <div class="aspect-square w-full overflow-hidden bg-gray-100 rounded-t-xl">
                                     @php
-                                        $imageUrl = $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image';
+                                        $imageUrl = $product->image ? (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image)) : 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop';
                                     @endphp
                                     <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover object-center transition duration-200 hover:scale-[1.02]">
                                 </div>
