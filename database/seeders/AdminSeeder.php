@@ -20,5 +20,16 @@ class AdminSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'customer@cafeshop.com'],
+            [
+                'name' => 'Khách hàng',
+                'password' => Hash::make('Password@123'),
+                'role' => 'customer',
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
