@@ -23,7 +23,7 @@
                     @foreach ($items as $item)
                         <div class="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4">
                             <div class="w-full sm:w-24 h-24 bg-gray-100 rounded-md overflow-hidden">
-                                <img src="{{ $item->product->image ? asset('storage/'.$item->product->image) : 'https://placehold.co/200x200?text=No+Image' }}"
+                                <img src="{{ $item->product->image ? (\Illuminate\Support\Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/'.$item->product->image)) : 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop' }}"
                                      alt="{{ $item->product->name }}"
                                      class="w-full h-full object-cover">
                             </div>

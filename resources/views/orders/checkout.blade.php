@@ -74,7 +74,7 @@
                     <div class="space-y-4">
                         @foreach ($items as $item)
                             <div class="flex gap-3 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
-                                <img src="{{ $item->product->image ? asset('storage/'.$item->product->image) : 'https://placehold.co/120x120?text=No+Image' }}" alt="{{ $item->product->name }}" class="h-16 w-16 rounded-md object-cover">
+                                <img src="{{ $item->product->image ? (\Illuminate\Support\Str::startsWith($item->product->image, ['http://', 'https://']) ? $item->product->image : asset('storage/'.$item->product->image)) : 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop' }}" alt="{{ $item->product->name }}" class="h-16 w-16 rounded-md object-cover">
                                 <div class="flex-1">
                                     <p class="font-medium text-gray-800">{{ $item->product->name }}</p>
                                     <p class="text-sm text-gray-500">Số lượng: {{ $item->quantity }}</p>

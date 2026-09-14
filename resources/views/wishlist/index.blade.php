@@ -23,7 +23,7 @@
                     @php($product = $item->product)
                     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                         <div class="aspect-square bg-gray-100">
-                            <img src="{{ $product->image ? asset('storage/'.$product->image) : 'https://placehold.co/400x400?text=No+Image' }}"
+                            <img src="{{ $product->image ? (\Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/'.$product->image)) : 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&auto=format&fit=crop' }}"
                                  alt="{{ $product->name }}"
                                  class="w-full h-full object-cover">
                         </div>
