@@ -41,10 +41,18 @@ require __DIR__.'/auth.php';
 // Public & Information Routes
 Route::get('/san-pham', [ProductSearchController::class, 'index'])->name('products.search');
 Route::get('/san-pham/{product:slug}', [ProductSearchController::class, 'show'])->name('products.show');
-Route::view('/gioi-thieu', 'about')->name('about');
-Route::view('/chinh-sach/doi-tra', 'policies.return')->name('policies.return');
-Route::view('/chinh-sach/bao-hanh', 'policies.warranty')->name('policies.warranty');
-Route::view('/chinh-sach/van-chuyen', 'policies.shipping')->name('policies.shipping');
+Route::get('/gioi-thieu', function () {
+    return view('about');
+})->name('about');
+Route::get('/chinh-sach/doi-tra', function () {
+    return view('policies.return');
+})->name('policies.return');
+Route::get('/chinh-sach/bao-hanh', function () {
+    return view('policies.warranty');
+})->name('policies.warranty');
+Route::get('/chinh-sach/van-chuyen', function () {
+    return view('policies.shipping');
+})->name('policies.shipping');
 
 // Review & Feedback Routes
 Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
