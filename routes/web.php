@@ -13,9 +13,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('home');
+Route::get('/', [ProductSearchController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
