@@ -38,11 +38,7 @@
                         <tr class="hover:bg-gray-50/80">
                             <td class="px-4 py-3 font-medium text-gray-600">#{{ $product->id }}</td>
                             <td class="px-4 py-3">
-                                @if($product->image)
-                                    <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-gray-200">
-                                @else
-                                    <span class="text-xs text-gray-400">Không có ảnh</span>
-                                @endif
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-gray-200">
                             </td>
                             <td class="px-4 py-3">
                                 <div class="font-semibold text-gray-900">{{ $product->name }}</div>

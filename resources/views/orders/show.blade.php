@@ -55,7 +55,7 @@
                         @foreach ($order->orderDetails as $detail)
                             <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ $detail->product && $detail->product->image ? asset('storage/' . $detail->product->image) : 'https://placehold.co/80x80?text=No+Image' }}" alt="{{ $detail->product_name }}" class="h-14 w-14 rounded-md object-cover">
+                                    <img src="{{ $detail->product ? $detail->product->image_url : asset('images/products/default.svg') }}" alt="{{ $detail->product_name }}" class="h-14 w-14 rounded-md object-cover">
                                     <div>
                                         <p class="font-medium text-gray-800">{{ $detail->product_name }}</p>
                                         <p class="text-sm text-gray-500">Số lượng: {{ $detail->quantity }}</p>

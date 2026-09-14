@@ -13,7 +13,15 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [ProductSearchController::class, 'index'])->name('home');
+Route::get('/', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return auth()->user()->role === 'admin'
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('dashboard');
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
