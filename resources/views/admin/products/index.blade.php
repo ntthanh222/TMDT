@@ -39,7 +39,7 @@
                             <td class="px-4 py-3 font-medium text-gray-600">#{{ $product->id }}</td>
                             <td class="px-4 py-3">
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-gray-200">
+                                    <img src="{{ \Illuminate\Support\Str::startsWith($product->image, ['http://', 'https://']) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-gray-200">
                                 @else
                                     <span class="text-xs text-gray-400">Không có ảnh</span>
                                 @endif
