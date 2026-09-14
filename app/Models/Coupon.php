@@ -32,4 +32,47 @@ class Coupon extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function isValidForAmount($subtotal): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        if ($this->starts_at && now()->lt($this->starts_at)) {
+            return false;
+        }
+
+        if ($this->expires_at && now()->gt($this->expires_at)) {
+            return false;
+        }
+
+        if ($this->usage_limit !== null && $this->used_count >= $this->usage_limit) {
+            return false;
+        }
+
+        if ($this->min_order_amount !== null && $subtotal < $this->min_order_amount) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function calculateDiscount($subtotal): float
+    {
+        if (! $this->isValidForAmount($subtotal)) {
+            return 0.0;
+        }
+
+        if ($this->type === 'percent') {
+            $discount = ($subtotal * $this->value) / 100;
+            if ($this->max_discount !== null && $discount > $this->max_discount) {
+                $discount = (float) $this->max_discount;
+            }
+
+            return (float) $discount;
+        }
+
+        return (float) min($this->value, $subtotal);
+    }
 }

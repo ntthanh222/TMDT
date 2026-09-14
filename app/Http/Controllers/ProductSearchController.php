@@ -39,7 +39,11 @@ class ProductSearchController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'best_selling':
-                $query->orderBy('view_count', 'desc'); // tạm dùng view_count, sau có thể đổi theo số lượng đã bán
+                $query->withSum(['orderDetails as total_sold' => function ($q) {
+                    $q->whereHas('order', function ($o) {
+                        $o->whereIn('status', ['completed', 'confirmed', 'shipping', 'pending']);
+                    });
+                }], 'quantity')->orderByDesc('total_sold');
                 break;
             case 'newest':
             default:
@@ -51,5 +55,24 @@ class ProductSearchController extends Controller
         $categories = Category::where('is_active', 1)->get();
 
         return view('products.search', compact('products', 'categories'));
+    }
+
+    public function show(Product $product)
+    {
+        if (! $product->is_active) {
+            abort(404);
+        }
+
+        $product->load(['category', 'images']);
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->take(4)
+            ->get();
+
+        $approvedReviews = $product->reviews()->where('is_approved', true)->with('user')->latest()->get();
+        $avgRating = round($approvedReviews->avg('rating') ?? 0, 1);
+
+        return view('products.show', compact('product', 'relatedProducts', 'approvedReviews', 'avgRating'));
     }
 }

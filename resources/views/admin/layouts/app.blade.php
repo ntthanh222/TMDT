@@ -27,22 +27,34 @@
                                 GoodCafe Admin
                             </a>
 
-                            <div class="hidden md:flex space-x-2">
+                            <div class="hidden md:flex space-x-1">
+                                <a href="{{ route('admin.dashboard') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.dashboard') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Dashboard
+                                </a>
                                 <a href="{{ route('admin.products.index') }}" 
                                    class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.products.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                                    Quản lý sản phẩm
+                                    Sản phẩm
                                 </a>
-                                <a href="{{ route('admin.reviews.index') }}" 
-                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.reviews.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                                    Quản lý đánh giá
+                                <a href="{{ route('admin.categories.index') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.categories.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Danh mục
+                                </a>
+                                <a href="{{ route('admin.users.index') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.users.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Người dùng
                                 </a>
                                 <a href="{{ route('admin.orders.index') }}" 
                                    class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.orders.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                                    Quản lý đơn hàng
+                                    Đơn hàng
+                                </a>
+                                <a href="{{ route('admin.reviews.index') }}" 
+                                   class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.reviews.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                    Đánh giá
                                 </a>
                                 <a href="{{ route('admin.feedbacks.index') }}" 
                                    class="px-3 py-2 rounded-md text-sm font-medium transition {{ request()->routeIs('admin.feedbacks.*') ? 'bg-gray-800 text-white border-b-2 border-emerald-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                                    Quản lý liên hệ & góp ý
+                                    Góp ý
                                 </a>
                             </div>
                         </div>

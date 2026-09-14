@@ -1,12 +1,12 @@
 <x-app-layout>
     <div class="mx-auto max-w-6xl px-4 py-8">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Thanh toán</h1>
-            <p class="mt-1 text-sm text-gray-500">Kiểm tra đơn hàng và xác nhận thông tin giao hàng.</p>
+            <h1 class="text-2xl font-bold text-gray-800">Thanh toán đơn hàng</h1>
+            <p class="mt-1 text-sm text-gray-500">Vui lòng kiểm tra thông tin giao hàng và chọn phương thức thanh toán.</p>
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div class="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
                 <ul class="list-disc space-y-1 pl-5">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -15,86 +15,129 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div class="lg:col-span-2 space-y-6">
-                <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                    <h2 class="mb-5 text-lg font-semibold text-gray-800">Thông tin giao hàng</h2>
+        <form method="POST" action="{{ route('orders.store') }}">
+            @csrf
 
-                    <form method="POST" action="{{ route('orders.store') }}" class="space-y-4">
-                        @csrf
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="lg:col-span-2 space-y-6">
+                    {{-- Shipping Address Card --}}
+                    <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-200 space-y-4">
+                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">1. Thông tin giao hàng</h2>
 
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Tên người nhận</label>
-                                <input type="text" name="recipient_name" value="{{ old('recipient_name', $defaultAddress?->recipient_name ?? auth()->user()->name) }}" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Họ và tên người nhận <span class="text-rose-500">*</span></label>
+                                <input type="text" name="recipient_name" value="{{ old('recipient_name', $defaultAddress?->recipient_name ?? auth()->user()->name) }}" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" required>
                             </div>
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Số điện thoại</label>
-                                <input type="text" name="phone" value="{{ old('phone', $defaultAddress?->phone ?? auth()->user()->phone) }}" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Số điện thoại <span class="text-rose-500">*</span></label>
+                                <input type="text" name="phone" value="{{ old('phone', $defaultAddress?->phone ?? auth()->user()->phone ?? '0909123456') }}" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" required>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Tỉnh/Thành</label>
-                                <input type="text" name="province" value="{{ old('province', $defaultAddress?->province) }}" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Tỉnh / Thành phố <span class="text-rose-500">*</span></label>
+                                <input type="text" name="province" value="{{ old('province', $defaultAddress?->province ?? 'Thành phố Hồ Chí Minh') }}" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" required>
                             </div>
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Quận/Huyện</label>
-                                <input type="text" name="district" value="{{ old('district', $defaultAddress?->district) }}" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Quận / Huyện <span class="text-rose-500">*</span></label>
+                                <input type="text" name="district" value="{{ old('district', $defaultAddress?->district ?? 'Quận 1') }}" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" required>
                             </div>
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">Phường/Xã</label>
-                                <input type="text" name="ward" value="{{ old('ward', $defaultAddress?->ward) }}" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Phường / Xã <span class="text-rose-500">*</span></label>
+                                <input type="text" name="ward" value="{{ old('ward', $defaultAddress?->ward ?? 'Phường Bến Nghé') }}" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" required>
                             </div>
                         </div>
 
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Địa chỉ chi tiết</label>
-                            <textarea name="address_line" rows="3" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" required>{{ old('address_line', $defaultAddress?->address_line) }}</textarea>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Địa chỉ chi tiết <span class="text-rose-500">*</span></label>
+                            <textarea name="address_line" rows="2" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" placeholder="Số nhà, tên đường..." required>{{ old('address_line', $defaultAddress?->address_line ?? '72 Lê Thánh Tôn') }}</textarea>
                         </div>
 
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Ghi chú</label>
-                            <textarea name="note" rows="3" class="w-full rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500" placeholder="Ví dụ: Giao giờ hành chính...">{{ old('note') }}</textarea>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Ghi chú giao hàng (không bắt buộc)</label>
+                            <textarea name="note" rows="2" class="w-full rounded-lg border-gray-300 text-sm focus:border-emerald-500 focus:ring-emerald-500" placeholder="Ví dụ: Giao vào giờ hành chính...">{{ old('note') }}</textarea>
                         </div>
+                    </div>
 
-                        <div class="flex justify-end">
-                            <button type="submit" class="rounded-lg bg-amber-600 px-5 py-3 text-sm font-semibold text-white hover:bg-amber-700">
-                                Xác nhận đặt hàng
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                    {{-- Payment Method Card --}}
+                    <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-200 space-y-4">
+                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">2. Phương thức thanh toán</h2>
 
-            <aside class="space-y-6">
-                <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
-                    <h2 class="mb-4 text-lg font-semibold text-gray-800">Đơn hàng</h2>
-                    <div class="space-y-4">
-                        @foreach ($items as $item)
-                            <div class="flex gap-3 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
-                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="h-16 w-16 rounded-md object-cover">
-                                <div class="flex-1">
-                                    <p class="font-medium text-gray-800">{{ $item->product->name }}</p>
-                                    <p class="text-sm text-gray-500">Số lượng: {{ $item->quantity }}</p>
+                        <div class="space-y-3">
+                            <label class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }} class="mt-1 text-emerald-600 focus:ring-emerald-500">
+                                <div>
+                                    <span class="font-semibold text-gray-900 block text-sm">Thanh toán khi nhận hàng (COD)</span>
+                                    <span class="text-xs text-gray-500">Thanh toán bằng tiền mặt trực tiếp cho shipper khi nhận được hàng.</span>
                                 </div>
-                                <p class="text-sm font-semibold text-gray-800">{{ number_format($item->quantity * $item->price) }}đ</p>
-                            </div>
-                        @endforeach
-                    </div>
+                            </label>
 
-                    @php
-                        $subtotal = $items->sum(fn ($item) => $item->quantity * $item->price);
-                    @endphp
-
-                    <div class="mt-5 space-y-3 text-sm text-gray-600">
-                        <div class="flex justify-between"><span>Tạm tính</span><span>{{ number_format($subtotal) }}đ</span></div>
-                        <div class="flex justify-between"><span>Phí vận chuyển</span><span>0đ</span></div>
-                        <div class="flex justify-between border-t border-gray-200 pt-3 text-base font-bold text-gray-800"><span>Tổng cộng</span><span>{{ number_format($subtotal) }}đ</span></div>
+                            <label class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="payment_method" value="bank_transfer" {{ old('payment_method') === 'bank_transfer' ? 'checked' : '' }} class="mt-1 text-emerald-600 focus:ring-emerald-500">
+                                <div>
+                                    <span class="font-semibold text-gray-900 block text-sm">Chuyển khoản ngân hàng</span>
+                                    <span class="text-xs text-gray-500">Chuyển khoản trực tiếp qua ngân hàng hoặc quét mã QR.</span>
+                                    <div class="mt-2 text-xs bg-emerald-50 text-emerald-800 p-2.5 rounded-lg border border-emerald-100">
+                                        <strong>Thông tin chuyển khoản:</strong><br>
+                                        • Ngân hàng: <strong>MBBank</strong><br>
+                                        • Số tài khoản: <strong>9999 GOODCAFE</strong><br>
+                                        • Tên tài khoản: <strong>CÔNG TY TNHH GOODCAFE</strong>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </aside>
-        </div>
+
+                {{-- Order Summary Sidebar --}}
+                <aside class="space-y-6">
+                    <div class="rounded-2xl bg-white p-6 shadow-sm border border-gray-200 space-y-4">
+                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Đơn hàng của bạn</h2>
+                        <div class="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                            @foreach ($items as $item)
+                                <div class="flex gap-3 py-3">
+                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="h-14 w-14 rounded-lg object-cover border">
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-sm text-gray-900 line-clamp-1">{{ $item->product->name }}</p>
+                                        <p class="text-xs text-gray-500">SL: {{ $item->quantity }} x {{ number_format($item->price) }}đ</p>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-900">{{ number_format($item->quantity * $item->price) }}đ</p>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-4 space-y-2 text-sm">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Tạm tính</span>
+                                <span class="font-semibold text-gray-900">{{ number_format($subtotal) }}đ</span>
+                            </div>
+
+                            @if ($discountAmount > 0)
+                                <div class="flex justify-between text-emerald-600">
+                                    <span>Giảm giá ({{ $couponSession['code'] ?? '' }})</span>
+                                    <span class="font-semibold">-{{ number_format($discountAmount) }}đ</span>
+                                </div>
+                            @endif
+
+                            <div class="flex justify-between text-gray-600">
+                                <span>Phí vận chuyển</span>
+                                <span class="text-emerald-600 font-semibold">Miễn phí</span>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-3 flex justify-between text-base font-bold text-gray-900">
+                                <span>Tổng cộng</span>
+                                <span class="text-emerald-600 text-xl">{{ number_format($total) }}đ</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl transition shadow-md">
+                            Xác nhận đặt hàng →
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        </form>
     </div>
 </x-app-layout>

@@ -86,13 +86,13 @@ class FeedbackController extends Controller
             'comment.max' => 'Nhận xét không được vượt quá 1000 ký tự.',
         ]);
 
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để gửi đánh giá.');
         }
 
         $product = Product::query()->first();
 
-        if (!$product) {
+        if (! $product) {
             return redirect()->route('contact.create')->with('error', 'Hiện chưa có sản phẩm nào để đánh giá.');
         }
 

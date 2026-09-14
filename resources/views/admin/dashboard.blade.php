@@ -12,127 +12,131 @@
         </a>
     </div>
 
-    @php
-        $totalProducts = \App\Models\Product::count();
-        $totalReviews = \App\Models\Review::count();
-        $pendingReviews = \App\Models\Review::where('is_approved', false)->count();
-        $totalFeedback = \App\Models\Feedback::count();
-        $unreadFeedback = \App\Models\Feedback::where('is_read', false)->count();
-        $recentReviews = \App\Models\Review::with(['user', 'product'])->latest()->limit(5)->get();
-        $recentFeedback = \App\Models\Feedback::latest()->limit(5)->get();
-    @endphp
-
+    {{-- Metrics Grid --}}
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {{-- Total Customers --}}
+        <div class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Tổng khách hàng</p>
+                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($totalCustomers) }}</h3>
+                </div>
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        {{-- Total Orders --}}
         <div class="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500">Sản phẩm</p>
-                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $totalProducts }}</h3>
+                    <p class="text-sm font-medium text-gray-500">Tổng đơn hàng</p>
+                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($totalOrders) }}</h3>
                 </div>
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 7h14l-1 11H6L5 7zm3-2a4 4 0 118 0" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                 </div>
             </div>
         </div>
 
+        {{-- Pending Orders --}}
         <div class="rounded-2xl border border-amber-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500">Tổng đánh giá</p>
-                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $totalReviews }}</h3>
+                    <p class="text-sm font-medium text-gray-500">Đơn chờ xử lý</p>
+                    <h3 class="mt-2 text-3xl font-bold text-amber-600">{{ number_format($pendingOrders) }}</h3>
                 </div>
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
             </div>
         </div>
 
-        <div class="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+        {{-- Total Revenue --}}
+        <div class="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500">Chờ duyệt</p>
-                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $pendingReviews }}</h3>
+                    <p class="text-sm font-medium text-gray-500">Doanh thu</p>
+                    <h3 class="mt-2 text-2xl font-bold text-purple-700">{{ number_format($totalRevenue, 0, ',', '.') }} đ</h3>
                 </div>
-                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-rose-100 bg-white p-5 shadow-sm">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">Liên hệ mới</p>
-                    <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $unreadFeedback }}</h3>
-                </div>
-                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
             </div>
         </div>
     </div>
 
+    {{-- Content Grid: Best Selling & Recent Orders --}}
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        {{-- Best Selling Products --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-5 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-900">Đánh giá mới nhất</h2>
-                <a href="{{ route('admin.reviews.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">Quản lý</a>
+                <h2 class="text-xl font-bold text-gray-900">Sản phẩm bán chạy</h2>
+                <a href="{{ route('admin.products.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">Xem tất cả</a>
             </div>
 
-            @if ($recentReviews->isEmpty())
+            @if ($bestSellingProducts->isEmpty())
                 <div class="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500">
-                    Chưa có đánh giá nào.
+                    Chưa có thống kê bán hàng.
                 </div>
             @else
-                <div class="space-y-3">
-                    @foreach ($recentReviews as $review)
-                        <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                            <div class="flex items-start justify-between gap-3">
+                <div class="divide-y divide-gray-100">
+                    @foreach ($bestSellingProducts as $product)
+                        <div class="flex items-center justify-between py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="h-10 w-10 rounded-lg object-cover border">
                                 <div>
-                                    <p class="font-semibold text-gray-900">{{ $review->user->name ?? 'Khách hàng' }}</p>
-                                    <p class="text-xs text-gray-500">{{ $review->product->name ?? 'Sản phẩm' }}</p>
+                                    <p class="font-semibold text-gray-900">{{ $product->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ number_format($product->price, 0, ',', '.') }} đ</p>
                                 </div>
-                                <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
-                                    {{ $review->rating }}★
-                                </span>
                             </div>
-                            <p class="mt-2 text-sm text-gray-600">{{ Str::limit($review->comment ?: 'Không có nhận xét', 110) }}</p>
+                            <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                                Đã bán: {{ number_format($product->total_sold ?? 0) }}
+                            </span>
                         </div>
                     @endforeach
                 </div>
             @endif
         </div>
 
+        {{-- Recent Orders --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="mb-5 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-900">Phản hồi mới nhất</h2>
-                <a href="{{ route('admin.feedbacks.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">Quản lý</a>
+                <h2 class="text-xl font-bold text-gray-900">Đơn hàng gần đây</h2>
+                <a href="{{ route('admin.orders.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">Quản lý đơn</a>
             </div>
 
-            @if ($recentFeedback->isEmpty())
+            @if ($recentOrders->isEmpty())
                 <div class="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500">
-                    Chưa có phản hồi nào.
+                    Chưa có đơn hàng nào.
                 </div>
             @else
-                <div class="space-y-3">
-                    @foreach ($recentFeedback as $feedback)
-                        <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                            <div class="flex items-center justify-between gap-3">
-                                <p class="font-semibold text-gray-900">{{ $feedback->name }}</p>
-                                @if (!$feedback->is_read)
-                                    <span class="inline-flex rounded-full bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-700">Mới</span>
-                                @endif
+                <div class="divide-y divide-gray-100">
+                    @foreach ($recentOrders as $order)
+                        <div class="flex items-center justify-between py-3">
+                            <div>
+                                <p class="font-semibold text-gray-900">Đơn #{{ $order->order_number }}</p>
+                                <p class="text-xs text-gray-500">{{ $order->user->name ?? 'Khách hàng' }} • {{ $order->created_at->format('d/m/Y H:i') }}</p>
                             </div>
-                            <p class="mt-1 text-xs text-gray-500">{{ $feedback->email }}</p>
-                            <p class="mt-2 text-sm text-gray-600">{{ Str::limit($feedback->message, 110) }}</p>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-900">{{ number_format($order->total, 0, ',', '.') }} đ</p>
+                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
+                                    @if($order->status === 'completed') bg-emerald-100 text-emerald-800
+                                    @elseif($order->status === 'cancelled') bg-rose-100 text-rose-800
+                                    @elseif($order->status === 'shipping') bg-blue-100 text-blue-800
+                                    @else bg-amber-100 text-amber-800 @endif">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </div>
                         </div>
                     @endforeach
                 </div>

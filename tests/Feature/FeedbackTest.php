@@ -2,7 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Feedback;
+use App\Models\Product;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -21,15 +25,15 @@ class FeedbackTest extends TestCase
 
     public function test_contact_page_shows_customer_reviews(): void
     {
-        $category = \App\Models\Category::create([
+        $category = Category::create([
             'name' => 'Cà phê',
             'slug' => 'ca-phe',
             'description' => 'Các loại cà phê',
             'is_active' => true,
         ]);
 
-        $user = \App\Models\User::factory()->create();
-        $product = \App\Models\Product::create([
+        $user = User::factory()->create();
+        $product = Product::create([
             'category_id' => $category->id,
             'name' => 'Cà phê Arabica',
             'slug' => 'ca-phe-arabica',
@@ -43,7 +47,7 @@ class FeedbackTest extends TestCase
             'view_count' => 0,
         ]);
 
-        \App\Models\Review::create([
+        Review::create([
             'product_id' => $product->id,
             'user_id' => $user->id,
             'rating' => 5,

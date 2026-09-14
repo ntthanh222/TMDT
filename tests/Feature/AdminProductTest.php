@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -61,7 +62,7 @@ class AdminProductTest extends TestCase
             'is_active' => true,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'name' => 'Cà phê ban đầu',
             'category_id' => $category->id,
             'price' => 150000,
@@ -110,7 +111,7 @@ class AdminProductTest extends TestCase
             'is_active' => true,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'name' => 'Trà đào',
             'category_id' => $category->id,
             'price' => 90000,
@@ -140,7 +141,7 @@ class AdminProductTest extends TestCase
             'is_active' => true,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = Product::factory()->create([
             'name' => 'Trà sữa truyền thống',
             'category_id' => $category->id,
             'price' => 120000,

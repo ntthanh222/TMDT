@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
-use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +24,21 @@ class OrderController extends Controller
         }
 
         $defaultAddress = $user->addresses()->where('is_default', true)->first();
+        $subtotal = $items->sum(fn ($item) => (float) $item->quantity * (float) $item->price);
+        $couponSession = session('coupon');
+        $discountAmount = 0;
+        $couponModel = null;
 
-        return view('orders.checkout', compact('cart', 'items', 'defaultAddress'));
+        if ($couponSession) {
+            $couponModel = Coupon::find($couponSession['id']);
+            if ($couponModel && $couponModel->isValidForAmount($subtotal)) {
+                $discountAmount = $couponModel->calculateDiscount($subtotal);
+            }
+        }
+
+        $total = max(0, $subtotal - $discountAmount);
+
+        return view('orders.checkout', compact('cart', 'items', 'defaultAddress', 'subtotal', 'couponSession', 'discountAmount', 'total'));
     }
 
     public function history(): View
@@ -78,8 +91,11 @@ class OrderController extends Controller
             'district' => ['required', 'string', 'max:255'],
             'ward' => ['required', 'string', 'max:255'],
             'address_line' => ['required', 'string', 'max:255'],
+            'payment_method' => ['nullable', 'in:cod,bank_transfer'],
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
+
+        $paymentMethod = $validated['payment_method'] ?? 'cod';
 
         foreach ($items as $item) {
             $product = $item->product;
@@ -95,7 +111,18 @@ class OrderController extends Controller
         $subtotal = $items->sum(fn ($item) => (float) $item->quantity * (float) $item->price);
         $shippingFee = 0;
         $discountAmount = 0;
-        $total = $subtotal + $shippingFee - $discountAmount;
+        $couponId = null;
+
+        $couponSession = session('coupon');
+        if ($couponSession) {
+            $couponModel = Coupon::find($couponSession['id']);
+            if ($couponModel && $couponModel->isValidForAmount($subtotal)) {
+                $couponId = $couponModel->id;
+                $discountAmount = $couponModel->calculateDiscount($subtotal);
+            }
+        }
+
+        $total = max(0, $subtotal + $shippingFee - $discountAmount);
 
         $address = $user->addresses()->create([
             'recipient_name' => $validated['recipient_name'],
@@ -109,11 +136,12 @@ class OrderController extends Controller
 
         $orderCode = 'ORD-'.now()->format('YmdHis').'-'.random_int(1000, 9999);
 
-        $order = DB::transaction(function () use ($user, $cart, $address, $subtotal, $shippingFee, $discountAmount, $total, $validated, $orderCode, $items) {
+        $order = DB::transaction(function () use ($user, $cart, $address, $subtotal, $shippingFee, $discountAmount, $total, $validated, $orderCode, $items, $couponId, $paymentMethod) {
             $order = Order::create([
                 'order_code' => $orderCode,
                 'user_id' => $user->id,
                 'address_id' => $address->id,
+                'coupon_id' => $couponId,
                 'subtotal' => $subtotal,
                 'discount_amount' => $discountAmount,
                 'shipping_fee' => $shippingFee,
@@ -121,6 +149,18 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
                 'note' => $validated['note'] ?? null,
+            ]);
+
+            if ($couponId) {
+                Coupon::where('id', $couponId)->increment('used_count');
+            }
+
+            // Create Payment record
+            Payment::create([
+                'order_id' => $order->id,
+                'method' => $paymentMethod,
+                'status' => 'pending',
+                'amount' => $total,
             ]);
 
             foreach ($items as $item) {
@@ -141,10 +181,16 @@ class OrderController extends Controller
             }
 
             $cart->items()->delete();
+            session()->forget('coupon');
 
             return $order;
         });
 
-        return redirect()->route('cart.index')->with('success', 'Đặt hàng thành công. Mã đơn hàng: '.$order->order_code);
+        $msg = 'Đặt hàng thành công! Mã đơn: '.$order->order_code;
+        if ($paymentMethod === 'bank_transfer') {
+            $msg .= ' Vui lòng chuyển khoản với nội dung: '.$order->order_code;
+        }
+
+        return redirect()->route('orders.show', $order)->with('success', $msg);
     }
 }

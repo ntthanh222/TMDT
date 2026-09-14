@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'category_id',
         'name',
@@ -50,7 +51,7 @@ class Product extends Model
             return asset($cleanPath);
         }
 
-        return asset('images/products/' . $cleanPath);
+        return asset('images/products/'.$cleanPath);
     }
 
     public function category()

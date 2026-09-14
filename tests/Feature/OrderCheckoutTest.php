@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\CartModel;
 use App\Models\CartItem;
+use App\Models\CartModel;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -86,7 +88,7 @@ class OrderCheckoutTest extends TestCase
             'is_active' => true,
         ]);
 
-        $order = \App\Models\Order::create([
+        $order = Order::create([
             'order_code' => 'ORD-TEST-001',
             'user_id' => $customer->id,
             'subtotal' => 100000,
@@ -96,7 +98,7 @@ class OrderCheckoutTest extends TestCase
             'payment_status' => 'unpaid',
         ]);
 
-        \App\Models\OrderDetail::create([
+        OrderDetail::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
             'product_name' => $product->name,
@@ -137,7 +139,7 @@ class OrderCheckoutTest extends TestCase
             'is_active' => true,
         ]);
 
-        $order = \App\Models\Order::create([
+        $order = Order::create([
             'order_code' => 'ORD-HISTORY-001',
             'user_id' => $user->id,
             'subtotal' => 180000,
@@ -147,7 +149,7 @@ class OrderCheckoutTest extends TestCase
             'payment_status' => 'paid',
         ]);
 
-        \App\Models\OrderDetail::create([
+        OrderDetail::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
             'product_name' => $product->name,
@@ -178,7 +180,7 @@ class OrderCheckoutTest extends TestCase
             'is_active' => true,
         ]);
 
-        $order = \App\Models\Order::create([
+        $order = Order::create([
             'order_code' => 'ORD-DETAIL-001',
             'user_id' => $user->id,
             'subtotal' => 120000,
@@ -188,7 +190,7 @@ class OrderCheckoutTest extends TestCase
             'payment_status' => 'unpaid',
         ]);
 
-        \App\Models\OrderDetail::create([
+        OrderDetail::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
             'product_name' => $product->name,
@@ -220,7 +222,7 @@ class OrderCheckoutTest extends TestCase
             'is_active' => true,
         ]);
 
-        $order = \App\Models\Order::create([
+        $order = Order::create([
             'order_code' => 'ORD-PROFILE-001',
             'user_id' => $user->id,
             'subtotal' => 90000,
@@ -230,7 +232,7 @@ class OrderCheckoutTest extends TestCase
             'payment_status' => 'paid',
         ]);
 
-        \App\Models\OrderDetail::create([
+        OrderDetail::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
             'product_name' => $product->name,

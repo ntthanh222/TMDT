@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,58 @@ class CartController extends Controller
         $items = $cart?->items ?? collect();
         $subtotal = $items->sum(fn ($item) => $item->quantity * $item->price);
 
-        return view('cart.index', compact('cart', 'items', 'subtotal'));
+        $coupon = session('coupon');
+        $discount = $coupon ? (float) $coupon['discount'] : 0;
+        $total = max(0, $subtotal - $discount);
+
+        return view('cart.index', compact('cart', 'items', 'subtotal', 'coupon', 'discount', 'total'));
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string',
+        ]);
+
+        $code = strtoupper(trim($request->coupon_code));
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (! $coupon) {
+            return back()->with('error', 'Mã giảm giá không tồn tại.');
+        }
+
+        $cart = Auth::user()->cart()->with('items.product')->first();
+        $items = $cart?->items ?? collect();
+        $subtotal = $items->sum(fn ($item) => $item->quantity * $item->price);
+
+        if (! $coupon->isValidForAmount($subtotal)) {
+            if ($coupon->expires_at && now()->gt($coupon->expires_at)) {
+                return back()->with('error', 'Mã giảm giá đã hết hạn sử dụng.');
+            }
+            if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
+                return back()->with('error', 'Đơn hàng tối thiểu '.number_format($coupon->min_order_amount).'đ để dùng mã này.');
+            }
+
+            return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết lượt dùng.');
+        }
+
+        $discount = $coupon->calculateDiscount($subtotal);
+        session([
+            'coupon' => [
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'discount' => $discount,
+            ],
+        ]);
+
+        return back()->with('success', 'Áp dụng mã giảm giá thành công: -'.number_format($discount).'đ');
+    }
+
+    public function removeCoupon()
+    {
+        session()->forget('coupon');
+
+        return back()->with('success', 'Đã hủy mã giảm giá.');
     }
 
     public function add(Request $request, Product $product)
